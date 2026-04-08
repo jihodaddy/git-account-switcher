@@ -128,6 +128,11 @@ impl Storage {
     }
 
     // Binding operations
+    pub fn get_binding(&self, id: &str) -> Option<RepositoryBinding> {
+        let data = self.data.lock().unwrap();
+        data.bindings.iter().find(|b| b.id == id).cloned()
+    }
+
     pub fn get_bindings(&self) -> Vec<RepositoryBinding> {
         let data = self.data.lock().unwrap();
         data.bindings

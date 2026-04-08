@@ -15,6 +15,55 @@ pub fn credential_target(host: &str) -> String {
     format!("git:https://{}", host)
 }
 
+pub fn credential_target_with_user(host: &str, username: &str) -> String {
+    format!("git:https://{}@{}", username, host)
+}
+
+pub fn write_credential_for_user(host: &str, username: &str, token: &str) -> Result<(), String> {
+    let target = credential_target_with_user(host, username);
+    let target_wide = to_wide(&target);
+    let username_wide = to_wide(username);
+    let token_bytes = token.as_bytes();
+
+    let mut cred = CREDENTIALW {
+        Flags: CRED_FLAGS(0),
+        Type: CRED_TYPE_GENERIC,
+        TargetName: windows::core::PWSTR(target_wide.as_ptr() as *mut u16),
+        Comment: windows::core::PWSTR::null(),
+        LastWritten: Default::default(),
+        CredentialBlobSize: token_bytes.len() as u32,
+        CredentialBlob: token_bytes.as_ptr() as *mut u8,
+        Persist: CRED_PERSIST_LOCAL_MACHINE,
+        AttributeCount: 0,
+        Attributes: std::ptr::null_mut(),
+        TargetAlias: windows::core::PWSTR::null(),
+        UserName: windows::core::PWSTR(username_wide.as_ptr() as *mut u16),
+    };
+
+    unsafe {
+        CredWriteW(&mut cred, 0).map_err(|e| format!("CredWrite failed: {}", e))
+    }
+}
+
+pub fn delete_credential_for_user(host: &str, username: &str) -> Result<bool, String> {
+    let target = credential_target_with_user(host, username);
+    let target_wide = to_wide(&target);
+
+    unsafe {
+        let result = CredDeleteW(
+            windows::core::PCWSTR(target_wide.as_ptr()),
+            CRED_TYPE_GENERIC,
+            None,
+        );
+
+        match result {
+            Ok(()) => Ok(true),
+            Err(e) if e.code() == ERROR_NOT_FOUND.to_hresult() => Ok(false),
+            Err(e) => Err(format!("CredDelete failed: {}", e)),
+        }
+    }
+}
+
 pub fn write_credential(host: &str, username: &str, token: &str) -> Result<(), String> {
     let target = credential_target(host);
     let target_wide = to_wide(&target);

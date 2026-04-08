@@ -39,7 +39,7 @@
 
 - [x] T5.1: 저장소 연결 관리 (RepoBindings)
 - [x] T5.2: 설정 화면 (Settings)
-- [ ] T5.3: 시스템 트레이 통합 (향후 구현)
+- [ ] T5.3: 시스템 트레이 통합
 
 ## Phase 6: Build & Polish
 
@@ -48,3 +48,17 @@
 - [x] T6.3: 프로덕션 빌드 성공
 - [x] T6.4: NSIS 인스톨러 생성 (3.1MB)
 - [x] T6.5: MSI 인스톨러 생성 (4.6MB)
+
+## Phase 7: 폴더별 자격증명 자동 전환
+
+- [x] T7.1: git.rs에 includeIf + credential.useHttpPath 설정 함수 추가
+- [x] T7.2: credential.rs에 경로별 자격증명 키 생성 (git:https://user@host) 지원
+- [x] T7.3: bind_repository 커맨드 확장 — 바인딩 시 자격증명도 함께 설정
+- [x] T7.4: Frontend RepoBindings UI 업데이트 — 자격증명 자동 전환 표시
+
+## Phase 8: 시스템 트레이
+
+- [x] T8.1: Rust 트레이 아이콘 + 컨텍스트 메뉴 구현
+- [x] T8.2: 트레이 메뉴에서 계정 목록 표시 및 1-click 전환
+- [x] T8.3: 창 닫기 시 트레이 최소화 옵션
+- [x] T8.4: 빌드 검증 (NSIS + MSI 성공)

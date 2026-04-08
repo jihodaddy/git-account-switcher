@@ -5,6 +5,7 @@ import { StatusBar } from "./components/StatusBar";
 import { Settings } from "./components/Settings";
 import { RepoBindings } from "./components/RepoBindings";
 import { getAccounts, getCurrentGitUser } from "./lib/commands";
+import { listen } from "@tauri-apps/api/event";
 import type { Account, GitUser } from "./lib/types";
 import { Users, FolderGit2, SettingsIcon } from "lucide-react";
 
@@ -33,6 +34,11 @@ function App() {
 
   useEffect(() => {
     refreshData();
+    // Listen for tray-triggered account switches
+    const unlisten = listen("account-switched", () => {
+      refreshData();
+    });
+    return () => { unlisten.then((f) => f()); };
   }, []);
 
   useEffect(() => {

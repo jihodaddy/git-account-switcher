@@ -2,6 +2,7 @@ use crate::credential;
 use crate::git;
 use crate::models::*;
 use crate::storage::Storage;
+use crate::tray;
 use crate::validation;
 use tauri::State;
 
@@ -50,7 +51,7 @@ pub fn delete_account(id: String, storage: State<Storage>) -> Result<bool, Strin
 }
 
 #[tauri::command]
-pub async fn switch_account(id: String, storage: State<'_, Storage>) -> Result<SwitchResult, String> {
+pub async fn switch_account(id: String, app_handle: tauri::AppHandle, storage: State<'_, Storage>) -> Result<SwitchResult, String> {
     let account = storage
         .get_account(&id)
         .ok_or_else(|| "Account not found".to_string())?;
@@ -83,6 +84,9 @@ pub async fn switch_account(id: String, storage: State<'_, Storage>) -> Result<S
 
     // Step 5: Update active status in storage
     storage.set_active(&id, &account.host);
+
+    // Step 6: Update system tray menu
+    let _ = tray::update_tray_menu(&app_handle);
 
     Ok(SwitchResult {
         success: true,

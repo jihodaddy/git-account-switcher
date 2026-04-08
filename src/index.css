@@ -639,6 +639,13 @@ body {
   color: var(--text-secondary);
 }
 
+.binding-credential {
+  font-size: 11px;
+  color: var(--success);
+  margin-top: 2px;
+  opacity: 0.8;
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;

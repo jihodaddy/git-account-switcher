@@ -3,6 +3,7 @@ mod credential;
 mod git;
 mod models;
 mod storage;
+mod tray;
 mod validation;
 
 use storage::Storage;
@@ -25,6 +26,11 @@ pub fn run() {
             let storage = Storage::new(app_dir);
             app.manage(storage);
 
+            // Create system tray
+            if let Err(e) = tray::create_tray(app.handle()) {
+                log::warn!("Failed to create tray: {}", e);
+            }
+
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
@@ -33,6 +39,13 @@ pub fn run() {
                 )?;
             }
             Ok(())
+        })
+        .on_window_event(|window, event| {
+            // Minimize to tray on close instead of quitting
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                let _ = window.hide();
+                api.prevent_close();
+            }
         })
         .invoke_handler(tauri::generate_handler![
             commands::account::get_accounts,

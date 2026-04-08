@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import type { Account, RepositoryBinding } from "../lib/types";
 import { getBindings, bindRepository, unbindRepository } from "../lib/commands";
 import { open } from "@tauri-apps/plugin-dialog";
-import { FolderGit2, Plus, Trash2, Link } from "lucide-react";
+import { FolderGit2, Plus, Trash2, Link, KeyRound } from "lucide-react";
 
 interface Props {
   accounts: Account[];
@@ -75,7 +75,7 @@ export function RepoBindings({ accounts }: Props) {
             <FolderGit2 size={48} />
           </div>
           <h3>No repository bindings</h3>
-          <p>Bind a repository to use a specific account for that directory.</p>
+          <p>Bind a repository to automatically use a specific account's credentials for that directory.</p>
         </div>
       ) : (
         <div className="binding-list">
@@ -86,6 +86,10 @@ export function RepoBindings({ accounts }: Props) {
                 <div className="binding-account">
                   <Link size={12} style={{ display: "inline", marginRight: 4 }} />
                   {b.account_name || getAccountName(b.account_id)}
+                </div>
+                <div className="binding-credential">
+                  <KeyRound size={11} style={{ display: "inline", marginRight: 4 }} />
+                  Credential auto-switch enabled
                 </div>
               </div>
               <button
